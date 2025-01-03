@@ -1,4 +1,3 @@
-cat > rootshell.c << "EOF"
 #define _GNU_SOURCE
 #include <linux/capability.h>
 #include <stdio.h>
